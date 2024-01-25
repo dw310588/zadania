@@ -1,14 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
 #define FIRST_EL 5
 #define SECOND_EL 7
 
-void calc_n_elements(double *src, int n) {
+typedef struct Result {
+    double min;
+    int min_idx;
+    double avg;
+} Result;
+
+Result calc_n_elements(double *src, int n) {
     double a1,a2;
     double result;
-    for(int i = 0; i < n; i++) {
+    double sum = 0;
+    int min = INT_MAX;
+    int min_idx = 0;
+    int i;
+    for(i = 0; i < n; i++) {
         if(i == 0) {
             a1 = FIRST_EL;
             a2 = SECOND_EL;
@@ -21,15 +32,23 @@ void calc_n_elements(double *src, int n) {
         }
         result = sin(a2) + pow(a1,1./5) - 2;
         src[i] = result;
+        sum += result;
+        if(min > result) {
+            min = result;
+            min_idx = i;
+        }
     }
+    double avg = sum / i;
+    Result res = { .min = min, .min_idx = min_idx, .avg = avg };
+    return res;
 }
 
-void print_elements(double *src, int n) {
-    printf("%i %i ",FIRST_EL,SECOND_EL);
-    for(int i = 0; i < n; i++) {
-        printf("%f ",src[i]);
-    }
-    printf("\n");
+void save(Result *res, const char *filename) {
+    FILE *fptr = fopen(filename, "w");
+    fprintf(fptr,"Min -> %f\n",res->min);
+    fprintf(fptr,"Min index -> %i\n",res->min_idx);
+    fprintf(fptr,"Avg -> %f\n",res->avg);
+    fclose(fptr);
 }
 
 int main() {
@@ -37,8 +56,8 @@ int main() {
     int n;
     scanf("%i",&n);
     elements = (double *) malloc(sizeof(double)*n);
-    calc_n_elements(elements,n);
-    print_elements(elements,n);
+    Result res = calc_n_elements(elements,n);
+    save(&res,"dane.txt");
 
     return 0;
 }
