@@ -9,7 +9,7 @@ int main() {
     while(curr <= 15 && odds_count < 3) {
         scanf("%i",&curr);
         if(curr > 15) {
-            sum++;
+            sum += curr;
         }
         if(curr % 2 == 1) {
             odds_count++;
